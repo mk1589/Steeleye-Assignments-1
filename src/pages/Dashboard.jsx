@@ -20,14 +20,31 @@ const Dashboard = () => {
   const [selectedOrderDetails, setSelectedOrderDetails] = useState({});
   const [selectedOrderTimeStamps, setSelectedOrderTimeStamps] = useState({});
 
+
+  const combinedData = mockData.results.map((order) => {
+    const orderId = order["&id"];
+    const timestampData = timestamps.results.find(
+      (timestamp) => timestamp["&id"] === orderId
+    );
+
+    return {
+      ...order,
+      orderSubmitted: timestampData.timestamps.orderSubmitted,
+      timestamps: timestampData.timestamps,
+    
+    };
+  });
+  
+  
   return (
     <div>
       <div className={styles.header}>
-        <HeaderTitle primaryTitle="Orders" secondaryTitle="5 orders" />
+        <HeaderTitle primaryTitle="Orders" secondaryTitle={`${timestamps.results.length} orders`}  />
         <div className={styles.actionBox}>
           <Search
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
+
           />
           <Dropdown
             options={["GBP", "USD", "JPY", "EUR"]}
@@ -37,6 +54,7 @@ const Dashboard = () => {
         </div>
       </div>
       <div className={styles.content}>
+        
         <div className={styles.section}>
           <Card
             cardData={selectedOrderDetails}
@@ -47,7 +65,7 @@ const Dashboard = () => {
             title="Selected Order Timestamps"
           />
         </div>
-        <List rows={mockData.results} />
+        <List rows={combinedData} currency ={currency} searchText ={searchText} />
       </div>
     </div>
   );
